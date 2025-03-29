@@ -75,6 +75,8 @@
             font-size: 1.3em;
             box-shadow: 5px 5px 0px #d84315;
             transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
         }
 
         .button:hover {
@@ -125,10 +127,17 @@
 
             if (verhaalSnap.exists()) {
                 const data = verhaalSnap.data();
+
+                // 📌 Pagina-titel aanpassen
+                document.title = `📖 ${data.titel} - Paprika Verhalen`;
+
+                // 📌 Afbeelding fallback (indien geen afbeelding beschikbaar)
+                const afbeelding = data.afbeelding ? `<img src="${data.afbeelding}" alt="Verhaal afbeelding">` : "";
+
                 document.getElementById("verhaal-container").innerHTML = `
                     <h1>🌶️ ${data.titel}</h1>
                     <p><strong>Door:</strong> ${data.auteur}</p>
-                    <img src="${data.afbeelding}" alt="Verhaal afbeelding">
+                    ${afbeelding}
                     <p>${data.verhaal}</p>
                     <button class="button" onclick="deelVerhaal()">📢 Deel dit verhaal!</button>
                     <a class="button" href="index.html">🔙 Terug naar overzicht</a>
@@ -138,12 +147,24 @@
             }
         }
 
-        // 📢 Deelknop functie
+        // 📢 Deelknop functie (met betere ondersteuning)
         function deelVerhaal() {
             const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                alert("🎉 Link gekopieerd! Deel het met je vrienden!");
-            });
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    text: "Check dit coole paprika-verhaal!",
+                    url: url
+                }).then(() => {
+                    console.log("Verhaal gedeeld!");
+                }).catch((error) => {
+                    console.error("Fout bij delen:", error);
+                });
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert("🎉 Link gekopieerd! Deel het met je vrienden!");
+                });
+            }
         }
 
         // 🏁 Pagina laden
