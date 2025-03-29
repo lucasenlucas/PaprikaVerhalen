@@ -3,21 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verhaal</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Verhaal Bekijken</title>
+    <script type="module">
+        // 🚀 Firebase importeren
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+        // 🔥 Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
+            authDomain: "paprika-verhalen-13202.firebaseapp.com",
+            projectId: "paprika-verhalen-13202",
+            storageBucket: "paprika-verhalen-13202.firebasestorage.app",
+            messagingSenderId: "1046216494559",
+            appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
+        };
+
+        // 🎯 Firebase initialiseren
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 🕵️‍♂️ Haal het verhaal op via de URL
+        async function laadVerhaal() {
+            const params = new URLSearchParams(window.location.search);
+            const verhaalId = params.get("id");
+
+            if (!verhaalId) {
+                document.getElementById("verhaal-container").innerHTML = "<p>Verhaal niet gevonden!</p>";
+                return;
+            }
+
+            const verhaalRef = doc(db, "verhalen", verhaalId);
+            const verhaalSnap = await getDoc(verhaalRef);
+
+            if (verhaalSnap.exists()) {
+                const data = verhaalSnap.data();
+                document.getElementById("verhaal-titel").textContent = data.titel;
+                document.getElementById("verhaal-auteur").textContent = "Geschreven door: " + data.auteur;
+                document.getElementById("verhaal-tekst").textContent = data.volledigVerhaal;
+                document.getElementById("verhaal-afbeelding").src = data.afbeeldingUrl;
+
+                // Deelbare link
+                document.getElementById("deel-knop").addEventListener("click", () => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Link gekopieerd!");
+                });
+            } else {
+                document.getElementById("verhaal-container").innerHTML = "<p>Verhaal niet gevonden!</p>";
+            }
+        }
+
+        // 🏁 Pagina laden
+        document.addEventListener("DOMContentLoaded", () => {
+            laadVerhaal();
+        });
+
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffcc80;
+            text-align: center;
+        }
+        .verhaal-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        button {
+            background: #d84315;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #bf360c;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1 id="verhaal-titel">Verhaal Titel</h1>
-    </header>
-
-    <main>
-        <img id="verhaal-afbeelding" src="" alt="Verhaal afbeelding">
-        <p><strong>Auteur:</strong> <span id="verhaal-auteur"></span></p>
+    <h1 id="verhaal-titel">Laden...</h1>
+    <div class="verhaal-container" id="verhaal-container">
+        <img id="verhaal-afbeelding" src="" alt="Afbeelding van het verhaal">
+        <p id="verhaal-auteur"></p>
         <p id="verhaal-tekst"></p>
-        <button id="deel-knop">🔗 Deel dit verhaal</button>
-    </main>
-
-    <script type="module" src="js/verhaal.js"></script>
+        <button id="deel-knop">📢 Deel dit verhaal</button>
+    </div>
 </body>
 </html>
