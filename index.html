@@ -4,19 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paprika Verhalen</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <script type="module">
+        // 🚀 Firebase SDK importeren
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+        // 🔥 Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
+            authDomain: "paprika-verhalen-13202.firebaseapp.com",
+            projectId: "paprika-verhalen-13202",
+            storageBucket: "paprika-verhalen-13202.firebasestorage.app",
+            messagingSenderId: "1046216494559",
+            appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
+        };
+
+        // 🎯 Firebase initialiseren
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 📜 Verhalen ophalen uit Firestore
+        async function laadVerhalen() {
+            const verhalenContainer = document.getElementById("verhalen-container");
+            const querySnapshot = await getDocs(collection(db, "verhalen"));
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const verhaalCard = document.createElement("div");
+                verhaalCard.classList.add("verhaal-card");
+                verhaalCard.innerHTML = `
+                    <h2>${data.titel}</h2>
+                    <p>${data.korteSamenvatting}</p>
+                `;
+                verhaalCard.addEventListener("click", () => {
+                    window.location.href = `?id=${doc.id}`;
+                });
+                verhalenContainer.appendChild(verhaalCard);
+            });
+        }
+
+        // 🏁 Pagina laden
+        document.addEventListener("DOMContentLoaded", () => {
+            laadVerhalen();
+        });
+
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffcc80;
+            text-align: center;
+        }
+        h1 {
+            color: #d84315;
+        }
+        .verhaal-card {
+            background: white;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .verhaal-card:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>🌶️ Paprika Verhalen</h1>
-    </header>
-
-    <main>
-        <section id="verhalen-container">
-            <!-- Hier komen de verhalen vanuit Firebase -->
-        </section>
-    </main>
-
-    <script type="module" src="js/main.js"></script>
+    <h1>Paprika Verhalen 🌶️</h1>
+    <div id="verhalen-container"></div>
 </body>
 </html>
