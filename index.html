@@ -75,6 +75,7 @@
             font-size: 1.2em;
             box-shadow: 3px 3px 0px #d84315;
             transition: all 0.2s ease-in-out;
+            cursor: pointer;
         }
 
         .verhaal-card a:hover {
@@ -124,17 +125,21 @@
                 verhaalCard.innerHTML = `
                     <h2>🌶️ ${data.titel}</h2>
                     <p>${data.samenvatting}</p>
-                    <a href="verhalen.html?id=${doc.id}">Lees verder →</a>
+                    <a onclick="openVerhaal('${doc.id}')">Lees verder →</a>
                 `;
                 verhalenContainer.appendChild(verhaalCard);
             });
+        }
+
+        // 🚀 Open het verhaal met #id (i.p.v. ?id=...)
+        function openVerhaal(id) {
+            window.location.href = "verhalen.html#" + id;
         }
 
         // 🏁 Pagina laden
         document.addEventListener("DOMContentLoaded", () => {
             laadVerhalen();
         });
-
     </script>
 </head>
 <body>
