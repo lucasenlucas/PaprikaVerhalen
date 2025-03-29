@@ -3,7 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verhaal Bekijken</title>
+    <title>Lees een Paprika Verhaal! 🌶️</title>
+    <style>
+        /* Cartoon-achtig lettertype */
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+        /* Algemene stijlen */
+        body {
+            font-family: 'Luckiest Guy', cursive;
+            background-color: #ffeb99;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
+        }
+
+        /* Header */
+        header {
+            background-color: #ff5722;
+            color: white;
+            padding: 20px;
+            font-size: 1.8em;
+            text-shadow: 3px 3px 0px #d84315;
+        }
+
+        /* Verhaal-container */
+        .verhaal-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff8e1;
+            border: 6px solid #ff9800;
+            border-radius: 15px;
+            box-shadow: 8px 8px 0px #ff6f00;
+            padding: 20px;
+            text-align: left;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .verhaal-container:hover {
+            transform: rotate(-1deg);
+        }
+
+        .verhaal-container h1 {
+            color: #d84315;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .verhaal-container p {
+            font-size: 1.3em;
+            color: #333;
+        }
+
+        .verhaal-container img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Knoppen */
+        .button {
+            display: inline-block;
+            margin: 15px 5px;
+            padding: 12px 20px;
+            background-color: #ff5722;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.3em;
+            box-shadow: 5px 5px 0px #d84315;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .button:hover {
+            background-color: #d84315;
+            box-shadow: 6px 6px 0px #bf360c;
+            transform: translateY(-3px);
+        }
+
+        /* Leuke paprika onderaan */
+        .paprika-footer {
+            margin-top: 30px;
+            font-size: 2em;
+            color: #ff5722;
+            text-shadow: 3px 3px 0px #d84315;
+        }
+    </style>
     <script type="module">
         // 🚀 Firebase importeren
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
@@ -23,13 +110,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 🕵️‍♂️ Haal het verhaal op via de URL
+        // 🏆 Verhaal ophalen
         async function laadVerhaal() {
-            const params = new URLSearchParams(window.location.search);
-            const verhaalId = params.get("id");
+            const urlParams = new URLSearchParams(window.location.search);
+            const verhaalId = urlParams.get("id");
 
             if (!verhaalId) {
-                document.getElementById("verhaal-container").innerHTML = "<p>Verhaal niet gevonden!</p>";
+                document.getElementById("verhaal-container").innerHTML = "<p>Geen verhaal gevonden! 😢</p>";
                 return;
             }
 
@@ -38,19 +125,25 @@
 
             if (verhaalSnap.exists()) {
                 const data = verhaalSnap.data();
-                document.getElementById("verhaal-titel").textContent = data.titel;
-                document.getElementById("verhaal-auteur").textContent = "Geschreven door: " + data.auteur;
-                document.getElementById("verhaal-tekst").textContent = data.volledigVerhaal;
-                document.getElementById("verhaal-afbeelding").src = data.afbeeldingUrl;
-
-                // Deelbare link
-                document.getElementById("deel-knop").addEventListener("click", () => {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert("Link gekopieerd!");
-                });
+                document.getElementById("verhaal-container").innerHTML = `
+                    <h1>🌶️ ${data.titel}</h1>
+                    <p><strong>Door:</strong> ${data.auteur}</p>
+                    <img src="${data.afbeelding}" alt="Verhaal afbeelding">
+                    <p>${data.verhaal}</p>
+                    <button class="button" onclick="deelVerhaal()">📢 Deel dit verhaal!</button>
+                    <a class="button" href="index.html">🔙 Terug naar overzicht</a>
+                `;
             } else {
-                document.getElementById("verhaal-container").innerHTML = "<p>Verhaal niet gevonden!</p>";
+                document.getElementById("verhaal-container").innerHTML = "<p>Oeps! Dit verhaal bestaat niet meer. 😵</p>";
             }
+        }
+
+        // 📢 Deelknop functie
+        function deelVerhaal() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("🎉 Link gekopieerd! Deel het met je vrienden!");
+            });
         }
 
         // 🏁 Pagina laden
@@ -59,44 +152,14 @@
         });
 
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffcc80;
-            text-align: center;
-        }
-        .verhaal-container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        img {
-            max-width: 100%;
-            border-radius: 10px;
-        }
-        button {
-            background: #d84315;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #bf360c;
-        }
-    </style>
 </head>
 <body>
-    <h1 id="verhaal-titel">Laden...</h1>
-    <div class="verhaal-container" id="verhaal-container">
-        <img id="verhaal-afbeelding" src="" alt="Afbeelding van het verhaal">
-        <p id="verhaal-auteur"></p>
-        <p id="verhaal-tekst"></p>
-        <button id="deel-knop">📢 Deel dit verhaal</button>
-    </div>
+    <header>
+        <h1>📖 Lees een Paprika Verhaal! 🌶️</h1>
+    </header>
+    <main id="verhaal-container">
+        <p>Verhaal wordt geladen...</p>
+    </main>
+    <div class="paprika-footer">🥕🌽🍅 Deel en geniet! 🌶️🥑🍆</div>
 </body>
 </html>
