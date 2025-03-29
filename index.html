@@ -15,87 +15,123 @@
             text-align: center;
             margin: 0;
             padding: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
         }
 
-        /* Header */
         header {
             background-color: #ff5722;
             color: white;
             padding: 20px;
-            font-size: 1.5em;
+            font-size: 2em;
             text-shadow: 3px 3px 0px #d84315;
         }
 
-        /* Verhalen container */
-        #verhalen-container {
+        /* Verhalen overzicht */
+        .verhalen-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            gap: 20px;
             padding: 20px;
         }
 
-        /* Verhaal kaarten */
         .verhaal-card {
-            background: #fff8e1;
-            border: 5px solid #ff9800;
-            border-radius: 15px;
-            box-shadow: 5px 5px 0px #ff6f00;
-            padding: 20px;
-            width: 320px;
-            margin: 15px;
-            text-align: left;
-            position: relative;
+            width: 280px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 0px #ff9800;
+            cursor: pointer;
             transition: transform 0.2s ease-in-out;
         }
 
         .verhaal-card:hover {
-            transform: rotate(-2deg) scale(1.05);
+            transform: scale(1.05);
         }
 
-        .verhaal-card h2 {
-            margin: 0;
-            font-size: 1.8em;
+        .verhaal-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* Popup (Verhaalweergave) */
+        .popup-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .popup {
+            width: 80%;
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 8px 8px 0px #ff6f00;
+            text-align: left;
+            position: relative;
+        }
+
+        .popup h1 {
             color: #d84315;
         }
 
-        .verhaal-card p {
-            font-size: 1.2em;
-            color: #333;
+        .popup img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        .verhaal-card a {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 15px;
+        .popup button {
             background-color: #ff5722;
             color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-size: 1.2em;
-            box-shadow: 3px 3px 0px #d84315;
-            transition: all 0.2s ease-in-out;
+            border: none;
+            padding: 10px 20px;
             cursor: pointer;
+            font-size: 1.2em;
+            border-radius: 10px;
+            box-shadow: 4px 4px 0px #d84315;
+            transition: transform 0.2s ease-in-out;
         }
 
-        .verhaal-card a:hover {
-            background-color: #d84315;
-            box-shadow: 5px 5px 0px #bf360c;
-            transform: translateY(-3px);
+        .popup button:hover {
+            transform: scale(1.1);
         }
 
-        /* Leuke paprika onderaan */
-        .paprika-footer {
-            margin-top: 30px;
-            font-size: 2em;
-            color: #ff5722;
-            text-shadow: 3px 3px 0px #d84315;
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff5722;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Actieve popup */
+        .popup-container.active {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
     <script type="module">
         // 🚀 Firebase importeren
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
         // 🔥 Firebase configuratie
         const firebaseConfig = {
@@ -111,45 +147,78 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 🏆 Verhalen ophalen
+        // 📚 Verhalen ophalen en tonen
         async function laadVerhalen() {
             const verhalenContainer = document.getElementById("verhalen-container");
-            const querySnapshot = await getDocs(collection(db, "verhalen"));
+            const verhalenSnap = await getDocs(collection(db, "verhalen"));
 
-            verhalenContainer.innerHTML = ""; // Oude verhalen wissen
+            verhalenContainer.innerHTML = ""; // Leegmaken voor herladen
 
-            querySnapshot.forEach((doc) => {
+            verhalenSnap.forEach((doc) => {
                 const data = doc.data();
                 const verhaalCard = document.createElement("div");
                 verhaalCard.classList.add("verhaal-card");
                 verhaalCard.innerHTML = `
-                    <h2>🌶️ ${data.titel}</h2>
+                    <img src="${data.afbeelding}" alt="Verhaal afbeelding">
+                    <h3>${data.titel}</h3>
                     <p>${data.samenvatting}</p>
-                    <a onclick="openVerhaal('${doc.id}')">Lees verder →</a>
                 `;
+                verhaalCard.addEventListener("click", () => toonVerhaal(doc.id));
                 verhalenContainer.appendChild(verhaalCard);
             });
         }
 
-        // 🚀 Open het verhaal met #id (i.p.v. ?id=...)
-        function openVerhaal(id) {
-            window.location.href = "verhalen.html#" + id;
+        // 🔥 Popup openen met verhaal
+        async function toonVerhaal(verhaalId) {
+            const verhaalRef = doc(db, "verhalen", verhaalId);
+            const verhaalSnap = await getDoc(verhaalRef);
+
+            if (verhaalSnap.exists()) {
+                const data = verhaalSnap.data();
+                document.getElementById("popup-titel").innerText = data.titel;
+                document.getElementById("popup-auteur").innerText = "Door: " + data.auteur;
+                document.getElementById("popup-afbeelding").src = data.afbeelding;
+                document.getElementById("popup-verhaal").innerText = data.verhaal;
+
+                // Popup laten zien
+                document.getElementById("popup-container").classList.add("active");
+            }
         }
 
-        // 🏁 Pagina laden
+        // 🚪 Popup sluiten
+        function sluitPopup() {
+            document.getElementById("popup-container").classList.remove("active");
+        }
+
+        // 🏁 Start de verhalen-lijst bij laden
         document.addEventListener("DOMContentLoaded", () => {
             laadVerhalen();
         });
+
     </script>
 </head>
 <body>
     <header>
-        <h1>🌶️ Paprika Verhalen 🌶️</h1>
-        <p>De leukste en gekste verhalen over paprika's!</p>
+        <h1>🌶️ Paprika Verhalen! 🌶️</h1>
     </header>
-    <main id="verhalen-container">
-        <p>Verhalen laden...</p>
+
+    <main>
+        <div id="verhalen-container" class="verhalen-container">
+            <p>Verhalen worden geladen...</p>
+        </div>
     </main>
-    <div class="paprika-footer">🥕🌽🍅 Veel plezier met lezen! 🌶️🥑🍆</div>
+
+    <!-- 📖 Popup venster voor verhaal -->
+    <div id="popup-container" class="popup-container">
+        <div class="popup">
+            <button class="close-btn" onclick="sluitPopup()">X</button>
+            <h1 id="popup-titel">Verhaal titel</h1>
+            <p id="popup-auteur">Auteur</p>
+            <img id="popup-afbeelding" src="" alt="Verhaal afbeelding">
+            <p id="popup-verhaal">Verhaaltekst</p>
+            <button onclick="sluitPopup()">Sluiten</button>
+        </div>
+    </div>
+
 </body>
 </html>
