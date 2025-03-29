@@ -3,9 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paprika Verhalen</title>
+    <title>Paprika Verhalen 🌶️</title>
+    <style>
+        /* Cartoon-achtig lettertype */
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+        /* Algemene stijlen */
+        body {
+            font-family: 'Luckiest Guy', cursive;
+            background-color: #ffeb99;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/cartographer.png');
+        }
+
+        /* Header */
+        header {
+            background-color: #ff5722;
+            color: white;
+            padding: 20px;
+            font-size: 1.5em;
+            text-shadow: 3px 3px 0px #d84315;
+        }
+
+        /* Verhalen container */
+        #verhalen-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Verhaal kaarten */
+        .verhaal-card {
+            background: #fff8e1;
+            border: 5px solid #ff9800;
+            border-radius: 15px;
+            box-shadow: 5px 5px 0px #ff6f00;
+            padding: 20px;
+            width: 320px;
+            margin: 15px;
+            text-align: left;
+            position: relative;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .verhaal-card:hover {
+            transform: rotate(-2deg) scale(1.05);
+        }
+
+        .verhaal-card h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #d84315;
+        }
+
+        .verhaal-card p {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .verhaal-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #ff5722;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            box-shadow: 3px 3px 0px #d84315;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .verhaal-card a:hover {
+            background-color: #d84315;
+            box-shadow: 5px 5px 0px #bf360c;
+            transform: translateY(-3px);
+        }
+
+        /* Leuke paprika onderaan */
+        .paprika-footer {
+            margin-top: 30px;
+            font-size: 2em;
+            color: #ff5722;
+            text-shadow: 3px 3px 0px #d84315;
+        }
+    </style>
     <script type="module">
-        // 🚀 Firebase SDK importeren
+        // 🚀 Firebase importeren
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
@@ -23,22 +110,22 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 📜 Verhalen ophalen uit Firestore
+        // 🏆 Verhalen ophalen
         async function laadVerhalen() {
             const verhalenContainer = document.getElementById("verhalen-container");
             const querySnapshot = await getDocs(collection(db, "verhalen"));
+
+            verhalenContainer.innerHTML = ""; // Oude verhalen wissen
 
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 const verhaalCard = document.createElement("div");
                 verhaalCard.classList.add("verhaal-card");
                 verhaalCard.innerHTML = `
-                    <h2>${data.titel}</h2>
-                    <p>${data.korteSamenvatting}</p>
+                    <h2>🌶️ ${data.titel}</h2>
+                    <p>${data.samenvatting}</p>
+                    <a href="verhalen.html?id=${doc.id}">Lees verder →</a>
                 `;
-                verhaalCard.addEventListener("click", () => {
-                    window.location.href = `?id=${doc.id}`;
-                });
                 verhalenContainer.appendChild(verhaalCard);
             });
         }
@@ -49,31 +136,15 @@
         });
 
     </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffcc80;
-            text-align: center;
-        }
-        h1 {
-            color: #d84315;
-        }
-        .verhaal-card {
-            background: white;
-            padding: 15px;
-            margin: 10px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .verhaal-card:hover {
-            transform: scale(1.05);
-        }
-    </style>
 </head>
 <body>
-    <h1>Paprika Verhalen 🌶️</h1>
-    <div id="verhalen-container"></div>
+    <header>
+        <h1>🌶️ Paprika Verhalen 🌶️</h1>
+        <p>De leukste en gekste verhalen over paprika's!</p>
+    </header>
+    <main id="verhalen-container">
+        <p>Verhalen laden...</p>
+    </main>
+    <div class="paprika-footer">🥕🌽🍅 Veel plezier met lezen! 🌶️🥑🍆</div>
 </body>
 </html>
