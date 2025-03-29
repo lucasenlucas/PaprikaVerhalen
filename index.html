@@ -69,10 +69,12 @@
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+            z-index: 100;
         }
 
         .popup {
-            width: 80%;
+            width: 100%;
             max-width: 600px;
             background: white;
             padding: 20px;
@@ -80,10 +82,17 @@
             box-shadow: 8px 8px 0px #ff6f00;
             text-align: left;
             position: relative;
+            max-height: 80%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
         }
 
         .popup h1 {
             color: #d84315;
+            font-size: 2em;
+            margin-bottom: 20px;
         }
 
         .popup img {
@@ -91,6 +100,21 @@
             max-height: 250px;
             object-fit: cover;
             border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .popup p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .popup .scrollable-content {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 20px;
         }
 
         .popup button {
@@ -109,23 +133,30 @@
             transform: scale(1.1);
         }
 
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff5722;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
         /* Actieve popup */
         .popup-container.active {
             visibility: visible;
             opacity: 1;
+        }
+
+        /* Zorg voor een goede weergave op mobiel */
+        @media (max-width: 768px) {
+            .verhalen-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .popup h1 {
+                font-size: 1.5em;
+            }
+
+            .popup p {
+                font-size: 1em;
+            }
+
+            .popup img {
+                max-height: 200px;
+            }
         }
     </style>
     <script type="module">
@@ -185,16 +216,17 @@
             }
         }
 
-        // 🚪 Popup sluiten
-        function sluitPopup() {
-            document.getElementById("popup-container").classList.remove("active");
-        }
+        // 👆 Sluiten door buiten de popup te klikken
+        document.getElementById("popup-container").addEventListener("click", (event) => {
+            if (event.target === document.getElementById("popup-container")) {
+                document.getElementById("popup-container").classList.remove("active");
+            }
+        });
 
         // 🏁 Start de verhalen-lijst bij laden
         document.addEventListener("DOMContentLoaded", () => {
             laadVerhalen();
         });
-
     </script>
 </head>
 <body>
@@ -211,12 +243,13 @@
     <!-- 📖 Popup venster voor verhaal -->
     <div id="popup-container" class="popup-container">
         <div class="popup">
-            <button class="close-btn" onclick="sluitPopup()">X</button>
             <h1 id="popup-titel">Verhaal titel</h1>
             <p id="popup-auteur">Auteur</p>
             <img id="popup-afbeelding" src="" alt="Verhaal afbeelding">
-            <p id="popup-verhaal">Verhaaltekst</p>
-            <button onclick="sluitPopup()">Sluiten</button>
+            <div class="scrollable-content">
+                <p id="popup-verhaal">Verhaaltekst</p>
+            </div>
+            <button onclick="document.getElementById('popup-container').classList.remove('active')">Sluiten</button>
         </div>
     </div>
 
