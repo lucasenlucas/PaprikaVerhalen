@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paprika Verhalen 🌶️</title>
+    <style>
+        /* Cartoon-achtig lettertype */
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+        /* Algemene stijlen */
+        body {
+            font-family: 'Luckiest Guy', cursive;
+            background-color: #ffeb99;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #ff5722;
+            color: white;
+            padding: 20px;
+            font-size: 2em;
+            text-shadow: 3px 3px 0px #d84315;
+        }
+
+        /* Formulier stijl */
+        .formulier-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 0px #ff9800;
+            width: 80%;
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: left;
+        }
+
+        .formulier-container h2 {
+            text-align: center;
+            color: #d84315;
+        }
+
+        .formulier-container label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .formulier-container input,
+        .formulier-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 2px solid #ff9800;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .formulier-container textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .formulier-container button {
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1.2em;
+            border-radius: 10px;
+            box-shadow: 4px 4px 0px #d84315;
+            margin-top: 10px;
+            width: 100%;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .formulier-container button:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+    <script type="module">
+        // 🚀 Firebase importeren
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+        // 🔥 Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
+            authDomain: "paprika-verhalen-13202.firebaseapp.com",
+            projectId: "paprika-verhalen-13202",
+            storageBucket: "paprika-verhalen-13202.firebasestorage.app",
+            messagingSenderId: "1046216494559",
+            appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
+        };
+
+        // 🎯 Firebase initialiseren
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 📚 Verhalen ophalen en tonen
+        async function laadVerhalen() {
+            const verhalenContainer = document.getElementById("verhalen-container");
+            const verhalenSnap = await getDocs(collection(db, "verhalen"));
+
+            verhalenContainer.innerHTML = ""; // Leegmaken voor herladen
+
+            verhalenSnap.forEach((doc) => {
+                const data = doc.data();
+                const verhaalCard = document.createElement("div");
+                verhaalCard.classList.add("verhaal-card");
+                verhaalCard.innerHTML = `
+                    <h3>${data.titel}</h3>
+                    <p>${data.samenvatting}</p>
+                `;
+                verhalenContainer.appendChild(verhaalCard);
+            });
+        }
+
+        // ✨ Verhaal opslaan
+        document.getElementById("verhaal-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const titel = document.getElementById("titel").value;
+            const auteur = document.getElementById("auteur").value;
+            const samenvatting = document.getElementById("samenvatting").value;
+            const afbeelding = document.getElementById("afbeelding").value;
+            const verhaal = document.getElementById("verhaal").value;
+
+            try {
+                await addDoc(collection(db, "verhalen"), {
+                    titel,
+                    auteur,
+                    samenvatting,
+                    afbeelding,
+                    verhaal
+                });
+
+                alert("🎉 Verhaal toegevoegd!");
+                document.getElementById("verhaal-form").reset();
+                laadVerhalen(); // Herlaad verhalenlijst
+            } catch (error) {
+                console.error("Fout bij toevoegen verhaal: ", error);
+            }
+        });
+
+        // 🏁 Start de verhalen-lijst bij laden
+        document.addEventListener("DOMContentLoaded", () => {
+            laadVerhalen();
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>🌶️ Paprika Verhalen! 🌶️</h1>
+    </header>
+
+    <main>
+        <div class="formulier-container">
+            <h2>Verhaal insturen</h2>
+            <form id="verhaal-form">
+                <label for="titel">Titel</label>
+                <input type="text" id="titel" required>
+
+                <label for="auteur">Auteur</label>
+                <input type="text" id="auteur" required>
+
+                <label for="samenvatting">Samenvatting</label>
+                <textarea id="samenvatting" required></textarea>
+
+                <label for="afbeelding">Afbeelding (URL)</label>
+                <input type="url" id="afbeelding" required>
+
+                <label for="verhaal">Volledig verhaal</label>
+                <textarea id="verhaal" required></textarea>
+
+                <button type="submit">Verhaal insturen</button>
+            </form>
+        </div>
+
+        
+    </main>
+
+</body>
+</html>
