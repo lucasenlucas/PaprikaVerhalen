@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina Niet Gevonden - Paprika Verhalen 🌶️</title>
+    <style>
+        /* Cartoon-achtig lettertype */
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+        /* Algemene stijlen */
+        body {
+            font-family: 'Luckiest Guy', cursive;
+            background-color: #ffeb99;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #ff5722;
+            color: white;
+            padding: 20px;
+            font-size: 2em;
+            text-shadow: 3px 3px 0px #d84315;
+        }
+
+        /* 404 foutmelding container */
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .error-container h1 {
+            font-size: 100px;
+            color: #f47c43;
+            margin-bottom: 10px;
+        }
+
+        .error-container h2 {
+            color: #d84315;
+            margin-bottom: 20px;
+        }
+
+        .error-container p {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            background-color: #ff5722;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #d84315;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌶️ Paprika Verhalen! 🌶️</h1>
+    </header>
+
+    <main>
+        <div class="error-container">
+            <h1>404</h1>
+            <h2>Pagina Niet Gevonden</h2>
+            <p>Oeps! De pagina die je zocht, bestaat niet (meer).</p>
+          
+            <button class="back-button" onclick="window.location.href = 'index.html';">Terug naar Home</button>
+        </div>
+    </main>
+</body>
+</html>
