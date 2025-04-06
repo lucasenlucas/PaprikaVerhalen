@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paprika Verhalen 🌶️</title>
+
+    <!-- AdSense script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4194552596665210"
+        crossorigin="anonymous"></script>
+
     <style>
-        /* Cartoon-achtig lettertype */
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
 
-        /* Algemene stijlen */
         body {
             font-family: 'Luckiest Guy', cursive;
             background-color: #ffeb99;
@@ -25,7 +28,6 @@
             text-shadow: 3px 3px 0px #d84315;
         }
 
-        /* Verhalen overzicht */
         .verhalen-container {
             display: flex;
             flex-wrap: wrap;
@@ -55,7 +57,6 @@
             border-radius: 10px;
         }
 
-        /* Popup (Verhaalweergave) */
         .popup-container {
             position: fixed;
             top: 0;
@@ -86,7 +87,6 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease-in-out;
         }
 
         .popup h1 {
@@ -133,13 +133,11 @@
             transform: scale(1.1);
         }
 
-        /* Actieve popup */
         .popup-container.active {
             visibility: visible;
             opacity: 1;
         }
 
-        /* Zorg voor een goede weergave op mobiel */
         @media (max-width: 768px) {
             .verhalen-container {
                 flex-direction: column;
@@ -159,31 +157,28 @@
             }
         }
     </style>
+
     <script type="module">
-        // 🚀 Firebase importeren
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        // 🔥 Firebase configuratie
         const firebaseConfig = {
             apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
             authDomain: "paprika-verhalen-13202.firebaseapp.com",
             projectId: "paprika-verhalen-13202",
-            storageBucket: "paprika-verhalen-13202.firebasestorage.app",
+            storageBucket: "paprika-verhalen-13202.appspot.com",
             messagingSenderId: "1046216494559",
             appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
         };
 
-        // 🎯 Firebase initialiseren
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 📚 Verhalen ophalen en tonen
         async function laadVerhalen() {
             const verhalenContainer = document.getElementById("verhalen-container");
             const verhalenSnap = await getDocs(collection(db, "verhalen"));
 
-            verhalenContainer.innerHTML = ""; // Leegmaken voor herladen
+            verhalenContainer.innerHTML = "";
 
             verhalenSnap.forEach((doc) => {
                 const data = doc.data();
@@ -199,7 +194,6 @@
             });
         }
 
-        // 🔥 Popup openen met verhaal
         async function toonVerhaal(verhaalId) {
             const verhaalRef = doc(db, "verhalen", verhaalId);
             const verhaalSnap = await getDoc(verhaalRef);
@@ -211,19 +205,16 @@
                 document.getElementById("popup-afbeelding").src = data.afbeelding;
                 document.getElementById("popup-verhaal").innerText = data.verhaal;
 
-                // Popup laten zien
                 document.getElementById("popup-container").classList.add("active");
             }
         }
 
-        // 👆 Sluiten door buiten de popup te klikken
         document.getElementById("popup-container").addEventListener("click", (event) => {
             if (event.target === document.getElementById("popup-container")) {
                 document.getElementById("popup-container").classList.remove("active");
             }
         });
 
-        // 🏁 Start de verhalen-lijst bij laden
         document.addEventListener("DOMContentLoaded", () => {
             laadVerhalen();
         });
@@ -232,8 +223,18 @@
 <body>
     <header>
         <h1>🌶️ Paprika Verhalen! 🌶️</h1>
-    
     </header>
+
+    <!-- PaprikaHeader Advertentie -->
+    <ins class="adsbygoogle"
+        style="display:block; margin: 20px auto;"
+        data-ad-client="ca-pub-4194552596665210"
+        data-ad-slot="5817444632"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 
     <main>
         <div id="verhalen-container" class="verhalen-container">
@@ -241,7 +242,6 @@
         </div>
     </main>
 
-    <!-- 📖 Popup venster voor verhaal -->
     <div id="popup-container" class="popup-container">
         <div class="popup">
             <h1 id="popup-titel">Verhaal titel</h1>
@@ -250,9 +250,11 @@
             <div class="scrollable-content">
                 <p id="popup-verhaal">Verhaaltekst</p>
             </div>
+
+            <!-- (Optioneel) Hier kun je later nog een advertentie toevoegen in de popup -->
+
             <button onclick="document.getElementById('popup-container').classList.remove('active')">Sluiten</button>
         </div>
     </div>
-
 </body>
 </html>
