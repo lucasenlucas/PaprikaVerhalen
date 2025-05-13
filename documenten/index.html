@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verhaal Insturen – Brainrot Nieuws</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0d0d0d;
+      color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1a1a1a;
+      padding: 20px;
+      text-align: center;
+      color: #ff004c;
+      font-size: 2rem;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .formulier-container {
+      background-color: #1c1c1c;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      box-shadow: 0 0 12px rgba(255, 0, 76, 0.2);
+    }
+
+    .formulier-container h2 {
+      text-align: center;
+      color: #ff004c;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ccc;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      background: #2a2a2a;
+      border: 2px solid #ff004c;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      background-color: #ff004c;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      margin-top: 20px;
+      width: 100%;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #730030;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfjYkbb__RXWvYYAgaDduuxtCYR7VX9Nc",
+      authDomain: "brainrot-news-af158.firebaseapp.com",
+      projectId: "brainrot-news-af158",
+      storageBucket: "brainrot-news-af158.firebasestorage.app",
+      messagingSenderId: "689610427163",
+      appId: "1:689610427163:web:4d08320cff0454c3ab21be"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("verhaal-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const titel = document.getElementById("titel").value;
+      const auteur = document.getElementById("auteur").value;
+      const samenvatting = document.getElementById("samenvatting").value;
+      const afbeelding = document.getElementById("afbeelding").value;
+      const verhaal = document.getElementById("verhaal").value;
+
+      try {
+        await addDoc(collection(db, "verhalen"), {
+          titel,
+          auteur,
+          samenvatting,
+          afbeelding,
+          verhaal
+        });
+
+        alert("🧠 Verhaal toegevoegd aan Brainrot Nieuws!");
+        document.getElementById("verhaal-form").reset();
+      } catch (error) {
+        console.error("Fout bij toevoegen verhaal:", error);
+      }
+    });
+  </script>
+</head>
+<body>
+  <header>🧠 Brainrot Nieuws</header>
+
+  <div class="formulier-container">
+    <h2>Verhaal insturen</h2>
+    <form id="verhaal-form">
+      <label for="titel">Titel</label>
+      <input type="text" id="titel" required>
+
+      <label for="auteur">Auteur</label>
+      <input type="text" id="auteur" required>
+
+      <label for="samenvatting">Samenvatting</label>
+      <textarea id="samenvatting" required></textarea>
+
+      <label for="afbeelding">Afbeelding (URL)</label>
+      <input type="url" id="afbeelding" required>
+
+      <label for="verhaal">Volledig verhaal</label>
+      <textarea id="verhaal" required></textarea>
+
+      <button type="submit">Insturen</button>
+    </form>
+  </div>
+</body>
+</html>
