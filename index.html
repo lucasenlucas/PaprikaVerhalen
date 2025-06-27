@@ -1,260 +1,225 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paprika Verhalen 🌶️</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paprika News 🌶️</title>
 
-    <!-- AdSense script -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4194552596665210"
-        crossorigin="anonymous"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Luckiest Guy', cursive;
-            background-color: #ffeb99;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      margin: 0;
+      font-family: 'Luckiest Guy', cursive;
+      background-color: #fff3c4;
+      color: #2e1d00;
+    }
 
-        header {
-            background-color: #ff5722;
-            color: white;
-            padding: 20px;
-            font-size: 2em;
-            text-shadow: 3px 3px 0px #d84315;
-        }
+    header {
+      background-color: #ff5722;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 2.5em;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
 
-        .verhalen-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-        }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
 
-        .verhaal-card {
-            width: 280px;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 5px 5px 0px #ff9800;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-        }
+    .article-preview {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 4px 4px 0px #ffa726;
+      transition: transform 0.2s ease-in-out;
+      cursor: pointer;
+    }
 
-        .verhaal-card:hover {
-            transform: scale(1.05);
-        }
+    .article-preview:hover {
+      transform: scale(1.02);
+    }
 
-        .verhaal-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+    .article-preview img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
 
-        .popup-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            padding: 20px;
-            z-index: 100;
-        }
+    .article-content {
+      padding: 15px;
+    }
 
-        .popup {
-            width: 100%;
-            max-width: 600px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 8px 8px 0px #ff6f00;
-            text-align: left;
-            position: relative;
-            max-height: 80%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+    .article-content h2 {
+      margin: 0 0 10px;
+      color: #d84315;
+      font-size: 1.5em;
+    }
 
-        .popup h1 {
-            color: #d84315;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
+    .article-content p {
+      margin: 0;
+      font-size: 1em;
+      color: #444;
+    }
 
-        .popup img {
-            width: 100%;
-            max-height: 250px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
+    .popup-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 100;
+      padding: 20px;
+    }
 
-        .popup p {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    .popup-container.active {
+      visibility: visible;
+      opacity: 1;
+    }
 
-        .popup .scrollable-content {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 10px;
-            margin-bottom: 20px;
-        }
+    .popup {
+      background: white;
+      padding: 30px;
+      max-width: 800px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 8px 8px 0px #ff6f00;
+      overflow-y: auto;
+      max-height: 90vh;
+      font-family: sans-serif;
+    }
 
-        .popup button {
-            background-color: #ff5722;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 1.2em;
-            border-radius: 10px;
-            box-shadow: 4px 4px 0px #d84315;
-            transition: transform 0.2s ease-in-out;
-        }
+    .popup h1 {
+      margin-top: 0;
+      color: #d84315;
+    }
 
-        .popup button:hover {
-            transform: scale(1.1);
-        }
+    .popup img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
 
-        .popup-container.active {
-            visibility: visible;
-            opacity: 1;
-        }
+    #popup-verhaal {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 1.1em;
+      color: #333;
+      padding: 10px 0;
+      border-top: 1px solid #eee;
+    }
 
-        @media (max-width: 768px) {
-            .verhalen-container {
-                flex-direction: column;
-                align-items: center;
-            }
+    .popup button {
+      margin-top: 20px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 8px;
+    }
 
-            .popup h1 {
-                font-size: 1.5em;
-            }
+    footer {
+      margin-top: 50px;
+      background: #ff5722;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
 
-            .popup p {
-                font-size: 1em;
-            }
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-            .popup img {
-                max-height: 200px;
-            }
-        }
-    </style>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
+      authDomain: "paprika-verhalen-13202.firebaseapp.com",
+      projectId: "paprika-verhalen-13202",
+      storageBucket: "paprika-verhalen-13202.appspot.com",
+      messagingSenderId: "1046216494559",
+      appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
+    };
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
-            authDomain: "paprika-verhalen-13202.firebaseapp.com",
-            projectId: "paprika-verhalen-13202",
-            storageBucket: "paprika-verhalen-13202.appspot.com",
-            messagingSenderId: "1046216494559",
-            appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
-        };
+    async function laadVerhalen() {
+      const container = document.getElementById("nieuws-container");
+      const verhalenSnap = await getDocs(collection(db, "verhalen"));
+      container.innerHTML = "";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+      verhalenSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        const kaart = document.createElement("div");
+        kaart.className = "article-preview";
+        kaart.innerHTML = `
+          <img src="${data.afbeelding}" alt="${data.titel}">
+          <div class="article-content">
+            <h2>${data.titel}</h2>
+            <p>${data.samenvatting || data.verhaal.slice(0, 100) + '...'}</p>
+          </div>
+        `;
+        kaart.addEventListener("click", () => openPopup(data));
+        container.appendChild(kaart);
+      });
+    }
 
-        async function laadVerhalen() {
-            const verhalenContainer = document.getElementById("verhalen-container");
-            const verhalenSnap = await getDocs(collection(db, "verhalen"));
+    function openPopup(data) {
+      document.getElementById("popup-titel").innerText = data.titel;
+      document.getElementById("popup-afbeelding").src = data.afbeelding;
+      document.getElementById("popup-verhaal").innerText = data.verhaal;
+      document.getElementById("popup-container").classList.add("active");
+    }
 
-            verhalenContainer.innerHTML = "";
-
-            verhalenSnap.forEach((doc) => {
-                const data = doc.data();
-                const verhaalCard = document.createElement("div");
-                verhaalCard.classList.add("verhaal-card");
-                verhaalCard.innerHTML = `
-                    <img src="${data.afbeelding}" alt="Verhaal afbeelding">
-                    <h3>${data.titel}</h3>
-                    <p>${data.samenvatting}</p>
-                `;
-                verhaalCard.addEventListener("click", () => toonVerhaal(doc.id));
-                verhalenContainer.appendChild(verhaalCard);
-            });
-        }
-
-        async function toonVerhaal(verhaalId) {
-            const verhaalRef = doc(db, "verhalen", verhaalId);
-            const verhaalSnap = await getDoc(verhaalRef);
-
-            if (verhaalSnap.exists()) {
-                const data = verhaalSnap.data();
-                document.getElementById("popup-titel").innerText = data.titel;
-                document.getElementById("popup-auteur").innerText = "Door: " + data.auteur;
-                document.getElementById("popup-afbeelding").src = data.afbeelding;
-                document.getElementById("popup-verhaal").innerText = data.verhaal;
-
-                document.getElementById("popup-container").classList.add("active");
-            }
-        }
-
-        document.getElementById("popup-container").addEventListener("click", (event) => {
-            if (event.target === document.getElementById("popup-container")) {
-                document.getElementById("popup-container").classList.remove("active");
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            laadVerhalen();
-        });
-    </script>
+    document.addEventListener("DOMContentLoaded", laadVerhalen);
+    window.addEventListener("click", (e) => {
+      const popup = document.getElementById("popup-container");
+      if (e.target === popup) popup.classList.remove("active");
+    });
+  </script>
 </head>
 <body>
-    <header>
-        <h1>🌶️ Paprika Verhalen! 🌶️</h1>
-    </header>
+  <header>
+    🌶️ Paprika News 🌶️
+  </header>
 
-    <!-- PaprikaHeader Advertentie -->
-    <ins class="adsbygoogle"
-        style="display:block; margin: 20px auto;"
-        data-ad-client="ca-pub-4194552596665210"
-        data-ad-slot="5817444632"
-        data-ad-format="auto"
-        data-full-width-responsive="true"></ins>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+  <div class="container" id="nieuws-container">
+    <p>Nieuws wordt geladen...</p>
+  </div>
 
-    <main>
-        <div id="verhalen-container" class="verhalen-container">
-            <p>Verhalen worden geladen...</p>
-        </div>
-    </main>
-
-    <div id="popup-container" class="popup-container">
-        <div class="popup">
-            <h1 id="popup-titel">Verhaal titel</h1>
-            <p id="popup-auteur">Auteur</p>
-            <img id="popup-afbeelding" src="" alt="Verhaal afbeelding">
-            <div class="scrollable-content">
-                <p id="popup-verhaal">Verhaaltekst</p>
-            </div>
-
-            <!-- (Optioneel) Hier kun je later nog een advertentie toevoegen in de popup -->
-
-            <button onclick="document.getElementById('popup-container').classList.remove('active')">Sluiten</button>
-        </div>
+  <div id="popup-container" class="popup-container">
+    <div class="popup">
+      <h1 id="popup-titel">Titel</h1>
+      <img id="popup-afbeelding" src="" alt="Afbeelding">
+      <div id="popup-verhaal">Verhaal</div>
+      <button onclick="document.getElementById('popup-container').classList.remove('active')">Sluiten</button>
     </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Paprika News – Vers, Vurige en Verrassende Verhalen 🌶️
+  </footer>
 </body>
 </html>
