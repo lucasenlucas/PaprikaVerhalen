@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Paprika Boeken 🌶️</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --orange:#ff5722; --orange-2:#ff6f00; --accent:#ffa726;
+      --paper:#fff9e6; --ink:#2e1d00; --panel:#ffffff; --shadow:rgba(0,0,0,.18);
+      --wood:#c7854a;
+    }
+    *{ box-sizing:border-box }
+    body{
+      margin:0;
+      background:#fff3c4;
+      color:var(--ink);
+      font-family:'Luckiest Guy', cursive;
+    }
+    header{
+      background:var(--orange);
+      color:#fff;
+      padding:18px 16px;
+      text-align:center;
+      font-size:2.2rem;
+      text-shadow:3px 3px 0 #d84315;
+      position:sticky; top:0; z-index:10;
+      box-shadow:0 6px 16px var(--shadow);
+    }
+    .bar{
+      max-width:1200px; margin:12px auto 0; padding:0 16px 16px;
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+    }
+    .bar input[type="search"]{
+      flex:1; min-width:220px; font-family:inherit;
+      padding:12px 14px; border:3px solid var(--accent); border-radius:12px;
+      background:#fff; box-shadow:4px 4px 0 var(--accent);
+      font-size:1rem;
+    }
+    .btn{
+      background:var(--orange); color:#fff; border:none; cursor:pointer;
+      padding:12px 14px; border-radius:12px; font-size:1rem;
+      box-shadow:4px 4px 0 #d84315; transition:transform .15s;
+    }
+    .btn:hover{ transform:translateY(-2px) }
+    .toggle{ display:flex; gap:8px; align-items:center }
+    .toggle input{ transform:scale(1.2) }
+
+    /* Grid & Plank */
+    .container{
+      max-width:1200px; margin:0 auto; padding:16px;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:18px;
+      transition:transform .3s;
+    }
+    .book{
+      background:#fff; border-radius:14px; overflow:hidden; cursor:pointer;
+      box-shadow:6px 6px 0 var(--accent);
+      transition:transform .2s;
+    }
+    .book:hover{ transform:translateY(-4px) }
+    .book img{ width:100%; height:260px; object-fit:cover; display:block }
+    .book .meta{ padding:12px 14px }
+    .book .meta h3{ margin:0 0 6px; color:#d84315; font-size:1.2rem }
+    .book .meta p{ margin:0; font-family:'Merriweather',serif; font-size:.95rem }
+
+    /* Plank mode */
+    .shelf-wrap{
+      max-width:1200px; margin:10px auto 24px; padding:0 16px;
+      display:none;
+    }
+    .shelf{
+      height:18px; background:linear-gradient(0deg,#af6c31, var(--wood));
+      border-radius:8px; box-shadow:0 6px 14px var(--shadow) inset, 0 8px 0 #8f5b2c;
+      margin:28px 0;
+    }
+    .plank .container{
+      perspective:1200px;
+      transform:translateZ(0);
+    }
+    .plank .book{
+      transform:rotateX(2deg) rotateY(-8deg);
+      transform-origin:left center;
+    }
+    .plank .shelf-wrap{ display:block }
+
+    /* Uploader */
+    .uploader{
+      max-width:900px; margin:24px auto; background:#fff; border-radius:14px;
+      box-shadow:6px 6px 0 var(--accent); padding:18px;
+      font-family:'Merriweather',serif;
+    }
+    .uploader h2{ margin:0 0 8px; font-family:'Luckiest Guy',cursive; color:#d84315 }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+    .uploader label{ font-weight:700; display:block; margin-top:10px }
+    .uploader input, .uploader textarea, .uploader select{
+      width:100%; padding:10px 12px; border:3px solid var(--accent); border-radius:12px;
+      font-size:1rem; font-family:'Merriweather',serif; background:#fff;
+    }
+    .uploader textarea{ min-height:140px }
+    .hint{ font-size:.9rem; color:#5a4a3b }
+    .chip{ display:inline-block; background:#ffe2b3; border:2px solid var(--accent);
+           padding:4px 10px; border-radius:999px; font-size:.85rem; margin-right:6px }
+
+    /* Reader */
+    .overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.65);
+      display:none; align-items:center; justify-content:center; padding:24px; z-index:100;
+    }
+    .overlay.active{ display:flex }
+    .reader{
+      width:min(980px,100%); max-height:92vh; overflow:hidden;
+      background:var(--paper); border-radius:16px; box-shadow:12px 12px 0 var(--orange-2);
+      display:grid; grid-template-rows:auto 1fr auto;
+      transform:scale(.96) rotateX(4deg); opacity:0;
+      animation:openBook .6s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    @keyframes openBook{
+      0%{ transform:scale(.96) rotateY(20deg) rotateX(4deg); opacity:0 }
+      100%{ transform:scale(1) rotateY(0) rotateX(0); opacity:1 }
+    }
+    .reader header{
+      box-shadow:none; position:static; background:var(--orange); color:#fff; text-shadow:none;
+      font-size:1.6rem; padding:12px 16px; border-radius:16px 16px 0 0;
+      display:flex; gap:8px; align-items:center; justify-content:space-between;
+    }
+    .reader .title{
+      display:flex; gap:10px; align-items:center; font-size:1.1rem
+    }
+    .reader .title img{ width:40px; height:54px; object-fit:cover; border-radius:6px; box-shadow:0 2px 0 #b94712 }
+    .reader main{
+      padding:20px; overflow:auto; background:repeating-linear-gradient(#fff9e6,#fff9e6 28px,#fff7db 29px);
+    }
+    .chapter-title{ font-family:'Merriweather',serif; font-weight:700; font-size:1.3rem; margin:0 0 10px }
+    .chapter-text{ font-family:'Merriweather',serif; line-height:1.8; font-size:1.05rem; white-space:pre-wrap }
+    .controls{
+      padding:12px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
+      background:#fff3d1; border-top:3px solid var(--accent);
+      border-radius:0 0 16px 16px;
+    }
+    .left, .right{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+    .select{ padding:8px 10px; border:2px solid var(--accent); border-radius:10px; background:#fff }
+    .progress{
+      width:220px; height:10px; background:#ffe8bf; border-radius:999px; position:relative; overflow:hidden;
+      border:2px solid var(--accent)
+    }
+    .bar-in{ position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--orange) }
+
+    .heart{ filter:drop-shadow(0 2px 0 #b94712) }
+    .fav{ color:#fff; background:#d84315 }
+
+    @media (max-width:720px){
+      .row{ grid-template-columns:1fr }
+      .progress{ width:160px }
+    }
+  </style>
+</head>
+<body>
+  <header>🌶️ Paprika Boeken</header>
+
+  <!-- Top toolbar -->
+  <div class="bar">
+    <input id="zoek" type="search" placeholder="Zoek op titel of auteur…">
+    <button class="btn" id="toggleFavs">⭐ Favorieten</button>
+    <div class="toggle">
+      <label for="plank"><span class="chip">Boekenplankmodus</span></label>
+      <input id="plank" type="checkbox">
+    </div>
+    <button class="btn" id="refresh">↻ Herladen</button>
+  </div>
+
+  <!-- Planks for bookshelf look -->
+  <div class="shelf-wrap"><div class="shelf"></div></div>
+
+  <!-- Books grid -->
+  <div id="lijst" class="container"></div>
+
+  <div class="shelf-wrap"><div class="shelf"></div></div>
+
+  <!-- Uploader -->
+  <section class="uploader" id="uploader">
+    <h2>📥 Nieuw boek uploaden</h2>
+    <p class="hint">Vul velden in. Bij <b>Hoofdstukken</b> mag je óf JSON array plakken, óf gewone tekst met
+      <code>### Hoofdstuktitel</code> als scheiding. Voorbeeld:<br>
+      <span class="chip">### Hoofdstuk 1</span> tekst… <span class="chip">### Hoofdstuk 2</span> tekst…</p>
+
+    <div class="row">
+      <div>
+        <label>Titel</label>
+        <input id="b_titel" required>
+      </div>
+      <div>
+        <label>Auteur</label>
+        <input id="b_auteur" required>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Omslag (URL)</label>
+        <input id="b_omslag" placeholder="https://…">
+      </div>
+      <div>
+        <label>Categorie</label>
+        <input id="b_cat" placeholder="Avontuur / Humor / …">
+      </div>
+    </div>
+    <label>Samenvatting</label>
+    <textarea id="b_sam"></textarea>
+
+    <label>Hoofdstukken</label>
+    <textarea id="b_hoofdstukken" placeholder="### Hoofdstuk 1
+De winkel was donker…
+
+### Hoofdstuk 2
+Ben hoorde ineens…"></textarea>
+
+    <div style="display:flex; gap:10px; margin-top:12px">
+      <button class="btn" id="btnParse">🔍 Voorbeeld genereren</button>
+      <button class="btn" id="btnUpload">⬆️ Uploaden</button>
+    </div>
+    <div id="preview" class="hint" style="margin-top:10px"></div>
+  </section>
+
+  <!-- Reader overlay -->
+  <div class="overlay" id="overlay">
+    <div class="reader" role="dialog" aria-modal="true">
+      <header>
+        <div class="title">
+          <img id="r_cover" alt="">
+          <div>
+            <div id="r_info" style="font-size:.9rem;opacity:.9">Titel • Auteur</div>
+            <div id="r_resume" class="hint"></div>
+          </div>
+        </div>
+        <div class="left">
+          <button class="btn" id="favBtn" title="Zet in favorieten">⭐</button>
+          <button class="btn" id="close">✖</button>
+        </div>
+      </header>
+
+      <main>
+        <h3 class="chapter-title" id="c_title"></h3>
+        <div class="chapter-text" id="c_text"></div>
+      </main>
+
+      <div class="controls">
+        <div class="left">
+          <button class="btn" id="prev">← Vorige</button>
+          <button class="btn" id="next">Volgende →</button>
+          <select id="jump" class="select"></select>
+          <div class="progress" title="Voortgang">
+            <div class="bar-in" id="bar"></div>
+          </div>
+        </div>
+
+        <div class="right">
+          <button class="btn" id="ttsPlay">▶︎ Voorlezen</button>
+          <button class="btn" id="ttsPause">⏸</button>
+          <button class="btn" id="ttsStop">⏹</button>
+          <label class="chip">Snelheid
+            <input id="rate" type="range" min="0.6" max="1.4" step="0.1" value="1">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase + App -->
+  <script type="module">
+    /* ---------------- Firebase ---------------- */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
+      authDomain: "paprika-verhalen-13202.firebaseapp.com",
+      projectId: "paprika-verhalen-13202",
+      storageBucket: "paprika-verhalen-13202.appspot.com",
+      messagingSenderId: "1046216494559",
+      appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    /* ---------------- State ---------------- */
+    let boeken = [];            // alle boeken uit Firestore
+    let filterFavorieten = false;
+    const LS_FAVS = "paprika_favs_v1";
+    const LS_PROGRESS = "paprika_progress_v1";
+    const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
+    const progress = JSON.parse(localStorage.getItem(LS_PROGRESS) || "{}");
+
+    // Reader state
+    let actueelBoek = null;
+    let hoofdstukIndex = 0;
+
+    /* ---------------- Helpers ---------------- */
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    function saveFavs(){
+      localStorage.setItem(LS_FAVS, JSON.stringify([...favs]));
+    }
+    function saveProgress(){
+      localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
+    }
+    function isFav(id){ return favs.has(id) }
+    function setProgress(boekId, idx){
+      progress[boekId] = idx; saveProgress();
+    }
+    function getProgress(boekId){ return Number.isInteger(progress[boekId]) ? progress[boekId] : 0 }
+
+    function truncate(s, n=110){ return s?.length>n ? s.slice(0,n-1)+"…" : s }
+
+    /* ---------------- UI: Lijst renderen ---------------- */
+    const lijst = $("#lijst");
+    async function laadBoeken(){
+      const q = query(collection(db, "boeken")); // eventueel orderBy('titel')
+      const snap = await getDocs(q);
+      boeken = [];
+      snap.forEach(d => boeken.push({ id:d.id, ...d.data() }));
+      renderBoeken();
+    }
+
+    function renderBoeken(){
+      const zoek = $("#zoek").value.trim().toLowerCase();
+      lijst.innerHTML = "";
+      const show = boeken.filter(b => {
+        const match = !zoek || (b.titel?.toLowerCase().includes(zoek) || b.auteur?.toLowerCase().includes(zoek));
+        const favOK = !filterFavorieten || isFav(b.id);
+        return match && favOK;
+      });
+      if(show.length===0){ lijst.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px">Geen boeken gevonden.</div>`; return }
+
+      show.forEach(b=>{
+        const card = document.createElement("article");
+        card.className = "book";
+        card.innerHTML = `
+          <img src="${b.omslag || 'https://picsum.photos/400/600?blur=2'}" alt="${b.titel}">
+          <div class="meta">
+            <h3>${b.titel}</h3>
+            <p>${truncate(b.samenvatting || '')}</p>
+            <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap">
+              <span class="chip">${b.auteur || 'Onbekend'}</span>
+              ${isFav(b.id)?'<span class="chip">⭐ Favoriet</span>':''}
+              ${getProgress(b.id)?`<span class="chip">Verder bij ${getProgress(b.id)+1}</span>`:''}
+            </div>
+          </div>
+        `;
+        card.addEventListener("click", ()=>openReader(b));
+        lijst.appendChild(card);
+      });
+    }
+
+    /* ---------------- UI: Plank modus ---------------- */
+    const plankToggle = $("#plank");
+    plankToggle.addEventListener("change", ()=>{
+      document.body.classList.toggle("plank", plankToggle.checked);
+    });
+
+    /* ---------------- Reader ---------------- */
+    const overlay = $("#overlay");
+    const cTitle = $("#c_title");
+    const cText  = $("#c_text");
+    const jump   = $("#jump");
+    const bar    = $("#bar");
+    const favBtn = $("#favBtn");
+    const rInfo  = $("#r_info");
+    const rResume= $("#r_resume");
+    const rCover = $("#r_cover");
+
+    function openReader(boek){
+      actueelBoek = boek;
+      hoofdstukIndex = getProgress(boek.id) || 0;
+
+      rCover.src = boek.omslag || "";
+      rInfo.textContent = `${boek.titel} • ${boek.auteur || 'Onbekend'}`;
+      rResume.textContent = hoofdstukIndex ? `Doorgaan bij hoofdstuk ${hoofdstukIndex+1}` : '';
+
+      favBtn.classList.toggle("fav", isFav(boek.id));
+
+      // chapters
+      jump.innerHTML = "";
+      (boek.hoofdstukken||[]).forEach((h,i)=>{
+        const opt = document.createElement("option");
+        opt.value = i; opt.textContent = `${i+1}. ${h.titel || 'Hoofdstuk'}`;
+        jump.appendChild(opt);
+      });
+
+      jump.value = String(hoofdstukIndex);
+      toonHoofdstuk();
+      overlay.classList.add("active");
+    }
+
+    function closeReader(){
+      stopTTS();
+      overlay.classList.remove("active");
+    }
+
+    function toonHoofdstuk(){
+      if(!actueelBoek) return;
+      const h = (actueelBoek.hoofdstukken||[])[hoofdstukIndex] || { titel:"(leeg)", tekst:"" };
+      cTitle.textContent = h.titel || `Hoofdstuk ${hoofdstukIndex+1}`;
+      cText.textContent  = h.tekst || "";
+      jump.value = String(hoofdstukIndex);
+      bar.style.width = `${( (hoofdstukIndex+1) / (actueelBoek.hoofdstukken?.length||1) )*100}%`;
+
+      // voortgang opslaan
+      setProgress(actueelBoek.id, hoofdstukIndex);
+    }
+
+    $("#close").addEventListener("click", closeReader);
+    $("#prev").addEventListener("click", ()=>{
+      if(!actueelBoek) return;
+      hoofdstukIndex = Math.max(0, hoofdstukIndex-1);
+      toonHoofdstuk();
+    });
+    $("#next").addEventListener("click", ()=>{
+      if(!actueelBoek) return;
+      hoofdstukIndex = Math.min((actueelBoek.hoofdstukken?.length||1)-1, hoofdstukIndex+1);
+      toonHoofdstuk();
+    });
+    jump.addEventListener("change", ()=>{
+      hoofdstukIndex = Number(jump.value||0);
+      toonHoofdstuk();
+    });
+    favBtn.addEventListener("click", ()=>{
+      if(!actueelBoek) return;
+      if(isFav(actueelBoek.id)) favs.delete(actueelBoek.id); else favs.add(actueelBoek.id);
+      saveFavs();
+      favBtn.classList.toggle("fav", isFav(actueelBoek.id));
+      renderBoeken();
+    });
+    overlay.addEventListener("click",(e)=>{ if(e.target===overlay) closeReader() });
+
+    /* ---------------- TTS (Voorlezen) ---------------- */
+    let utter = null;
+    function ensureUtter(){
+      if(!utter){
+        utter = new SpeechSynthesisUtterance();
+        utter.lang = "nl-NL";
+        utter.rate = Number($("#rate").value || 1);
+      }
+    }
+    function playTTS(){
+      ensureUtter();
+      stopTTS(false);
+      utter.text = cText.textContent || "";
+      utter.rate = Number($("#rate").value || 1);
+      window.speechSynthesis.speak(utter);
+    }
+    function pauseTTS(){ window.speechSynthesis.pause() }
+    function stopTTS(cancel=true){ 
+      if(cancel) window.speechSynthesis.cancel();
+    }
+    $("#ttsPlay").addEventListener("click", playTTS);
+    $("#ttsPause").addEventListener("click", pauseTTS);
+    $("#ttsStop").addEventListener("click", ()=>stopTTS(true));
+    $("#rate").addEventListener("input", ()=>{
+      if(window.speechSynthesis.speaking && !window.speechSynthesis.paused){
+        playTTS(); // herstart met nieuwe rate
+      }
+    });
+
+    /* ---------------- Uploader ---------------- */
+    const preview = $("#preview");
+
+    function parseHoofdstukken(src){
+      src = src.trim();
+      // JSON array?
+      if(src.startsWith("[")){
+        const arr = JSON.parse(src);
+        return arr.map((h,i)=>({ nummer:h.nummer ?? (i+1), titel:h.titel || `Hoofdstuk ${i+1}`, tekst:h.tekst || "" }));
+      }
+      // Markup met ### koppen
+      const parts = src.split(/\n(?=###\s+)/g).filter(Boolean);
+      let n=0;
+      const res = parts.map(block=>{
+        const m = block.match(/^###\s*(.+)\s*\n?([\s\S]*)$/);
+        const titel = m ? m[1].trim() : `Hoofdstuk ${++n}`;
+        const tekst = (m ? m[2] : block).trim();
+        n++;
+        return { nummer:n-1, titel, tekst };
+      });
+      // fallback (geen ### gevonden) => 1 hoofdstuk
+      if(res.length===0) return [{ nummer:1, titel:"Hoofdstuk 1", tekst:src }];
+      return res;
+    }
+
+    $("#btnParse").addEventListener("click", ()=>{
+      try{
+        const hs = parseHoofdstukken($("#b_hoofdstukken").value);
+        preview.innerHTML = `Voorbeeld: ${hs.length} hoofdstukken gevonden.<br>` +
+          hs.slice(0,3).map(h=>`<b>${h.titel}</b> — ${truncate(h.tekst, 80)}`).join("<br>") +
+          (hs.length>3 ? `<br>… (+${hs.length-3} meer)` : "");
+      }catch(e){
+        preview.textContent = "Parser-fout: " + e.message;
+      }
+    });
+
+    $("#btnUpload").addEventListener("click", async ()=>{
+      const titel = $("#b_titel").value.trim();
+      const auteur= $("#b_auteur").value.trim();
+      const omslag= $("#b_omslag").value.trim();
+      const sam   = $("#b_sam").value.trim();
+      const cat   = $("#b_cat").value.trim();
+      const raw   = $("#b_hoofdstukken").value;
+
+      if(!titel || !auteur || !raw){ alert("Titel, auteur en hoofdstukken zijn verplicht."); return }
+
+      let hoofdstukken;
+      try{ hoofdstukken = parseHoofdstukken(raw) }catch(e){ alert("Kan hoofdstukken niet lezen: "+e.message); return }
+
+      const docData = { titel, auteur, omslag, samenvatting: sam, categorie:cat, hoofdstukken };
+      try{
+        await addDoc(collection(db,"boeken"), docData);
+        alert("🎉 Boek geüpload!");
+        $("#b_titel").value = $("#b_auteur").value = $("#b_omslag").value = $("#b_sam").value = $("#b_cat").value = "";
+        $("#b_hoofdstukken").value = ""; preview.textContent = "";
+        await laadBoeken();
+      }catch(err){
+        console.error(err);
+        alert("Upload mislukt: " + err.message);
+      }
+    });
+
+    /* ---------------- Zoek/Favs/Refresh ---------------- */
+    $("#zoek").addEventListener("input", renderBoeken);
+    $("#toggleFavs").addEventListener("click", ()=>{
+      filterFavorieten = !filterFavorieten;
+      $("#toggleFavs").classList.toggle("fav", filterFavorieten);
+      renderBoeken();
+    });
+    $("#refresh").addEventListener("click", laadBoeken);
+
+    /* ---------------- Init ---------------- */
+    document.addEventListener("DOMContentLoaded", laadBoeken);
+  </script>
+</body>
+</html>
