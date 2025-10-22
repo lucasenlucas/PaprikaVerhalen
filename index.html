@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Paprika – Home 🌶️</title>
+  <title>Paprika 🌶️ – Home</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,136 +12,274 @@
   <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --orange:#ff5722; --orange-2:#ff6f00; --accent:#ffa726;
-      --paper:#fff9e6; --ink:#2e1d00; --muted:#5a4a3b;
+    :root {
+      --orange:#ff5722;
+      --orange-dark:#d84315;
+      --accent:#ffa726;
+      --bg:#fff3c4;
+      --paper:#fff9e6;
+      --ink:#2e1d00;
     }
-    *{ box-sizing:border-box }
+    *{box-sizing:border-box;}
     body{
-      margin:0; background:#fff3c4; color:var(--ink);
+      margin:0; background:var(--bg); color:var(--ink);
       font-family:'Luckiest Guy', cursive;
     }
+
     header{
-      background:var(--orange); color:#fff; padding:18px 16px; text-align:center;
-      font-size:2.2rem; text-shadow:3px 3px 0 #d84315; box-shadow:0 6px 16px rgba(0,0,0,.2);
-      position:sticky; top:0; z-index:30;
+      background:var(--orange);
+      color:white;
+      text-align:center;
+      padding:20px;
+      font-size:2.2rem;
+      box-shadow:0 5px 15px rgba(0,0,0,0.2);
+      position:sticky;
+      top:0;
+      z-index:20;
+      text-shadow:3px 3px 0 var(--orange-dark);
     }
 
-    main{ max-width:1200px; margin:0 auto; padding:18px 16px 60px }
+    main{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px 16px 80px;
+    }
 
-    .section{ margin:18px 0 6px; display:flex; justify-content:space-between; align-items:flex-end; gap:12px }
-    .section h2{ margin:0; color:#d84315; font-size:1.6rem }
-    .hint{ font-family:'Merriweather',serif; color:var(--muted); font-size:.95rem }
-
-    .search{ flex:1; min-width:220px; padding:12px 14px; border:3px solid var(--accent); border-radius:12px; background:#fff; box-shadow:4px 4px 0 var(--accent); font-size:1rem; font-family:inherit }
+    .section{
+      margin:30px 0 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      flex-wrap:wrap;
+    }
+    .section h2{
+      margin:0;
+      color:var(--orange-dark);
+      font-size:1.8rem;
+    }
 
     .grid{
-      display:grid; gap:18px; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); margin:12px 0 28px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:24px;
     }
-    .card, .book{
-      background:#fff; border-radius:14px; overflow:hidden; box-shadow:6px 6px 0 var(--accent); cursor:pointer;
-      transition:transform .15s;
-    }
-    .card:hover, .book:hover{ transform:translateY(-4px) }
-    .book img, .card img{ width:100%; height:220px; object-fit:cover; display:block }
-    .meta{ padding:12px 14px }
-    .meta h3{ margin:0 0 6px; color:#d84315; font-size:1.2rem }
-    .meta p{ margin:0; font-family:'Merriweather',serif; font-size:.95rem }
-    .chip{ display:inline-block; background:#ffe2b3; border:2px solid var(--accent); padding:4px 10px; border-radius:999px; font-size:.85rem; margin-right:6px }
 
-    /* overlay reader (books) */
-    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; align-items:center; justify-content:center; padding:24px; z-index:100 }
-    .overlay.active{ display:flex }
+    .book{
+      background:white;
+      border-radius:12px;
+      box-shadow:6px 6px 0 var(--accent);
+      overflow:hidden;
+      transition:transform .2s ease;
+      cursor:pointer;
+    }
+    .book:hover{
+      transform:translateY(-5px);
+    }
+    .book img{
+      width:100%;
+      aspect-ratio:2/3;
+      height:auto;
+      object-fit:cover;
+      display:block;
+    }
+    .meta{
+      padding:14px;
+      font-family:'Merriweather',serif;
+    }
+    .meta h3{
+      margin:0 0 6px;
+      font-size:1.3rem;
+      color:var(--orange-dark);
+      font-family:'Luckiest Guy',cursive;
+    }
+    .meta p{
+      margin:0;
+      color:#444;
+      font-size:.95rem;
+      font-family:'Merriweather',serif;
+    }
+
+    .card{
+      background:white;
+      border-radius:12px;
+      box-shadow:6px 6px 0 var(--accent);
+      overflow:hidden;
+      transition:transform .2s;
+      cursor:pointer;
+    }
+    .card:hover{transform:translateY(-4px);}
+    .card img{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+    }
+
+    /* Overlay reader */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:100;
+      padding:16px;
+    }
+    .overlay.active{display:flex;}
     .reader{
-      width:min(980px,100%); max-height:92vh; background:var(--paper); border-radius:16px; box-shadow:12px 12px 0 var(--orange-2);
-      display:grid; grid-template-rows:auto 1fr auto; overflow:hidden;
-      transform:scale(.96) rotateX(4deg); opacity:0; animation:openBook .6s cubic-bezier(.2,.7,.2,1) forwards;
+      background:var(--paper);
+      width:min(900px,100%);
+      max-height:90vh;
+      border-radius:16px;
+      box-shadow:10px 10px 0 var(--orange-dark);
+      display:flex;
+      flex-direction:column;
+      animation:pop .5s ease forwards;
+      overflow:hidden;
     }
-    @keyframes openBook{
-      0%{ transform:scale(.96) rotateY(20deg) rotateX(4deg); opacity:0 }
-      100%{ transform:scale(1) rotateY(0) rotateX(0); opacity:1 }
+    @keyframes pop{
+      from{transform:scale(.95) translateY(20px);opacity:0;}
+      to{transform:scale(1) translateY(0);opacity:1;}
     }
-    .reader header{ background:var(--orange); color:#fff; font-size:1.2rem; padding:12px 16px; display:flex; align-items:center; justify-content:space-between }
-    .reader main{ padding:20px; overflow:auto; background:repeating-linear-gradient(#fff9e6,#fff9e6 28px,#fff7db 29px) }
-    .chapter-title{ font-family:'Merriweather',serif; font-weight:700; font-size:1.3rem; margin:0 0 10px }
-    .chapter-text{ font-family:'Merriweather',serif; line-height:1.8; font-size:1.05rem; white-space:pre-wrap }
-    .controls{ padding:12px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; background:#fff3d1; border-top:3px solid var(--accent) }
-    .select{ padding:8px 10px; border:2px solid var(--accent); border-radius:10px; background:#fff }
-    .progress{ width:220px; height:10px; background:#ffe8bf; border-radius:999px; border:2px solid var(--accent); position:relative; overflow:hidden }
-    .bar-in{ position:absolute; inset:0 auto 0 0; width:0%; background:var(--orange) }
 
-    /* story popup */
-    .popup{ position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; padding:20px; z-index:90 }
-    .popup.active{ display:flex }
-    .popup .box{ background:#fff; max-width:800px; width:100%; max-height:90vh; overflow:auto; padding:24px; border-radius:12px; box-shadow:8px 8px 0 var(--orange-2); }
-    .popup .box h1{ margin-top:0; color:#d84315 }
-    .popup .box img{ width:100%; max-height:320px; object-fit:cover; border-radius:8px; margin-bottom:16px }
+    .reader header{
+      background:var(--orange);
+      color:white;
+      padding:12px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:1.2rem;
+    }
+    .reader main{
+      flex:1;
+      overflow:auto;
+      padding:20px;
+    }
+    .chapter-title{
+      font-family:'Luckiest Guy',cursive;
+      color:var(--orange-dark);
+      font-size:1.4rem;
+      margin-top:0;
+    }
+    .chapter-text{
+      font-family:'Merriweather',serif;
+      line-height:1.8;
+      font-size:1.05rem;
+      white-space:pre-wrap;
+      color:#222;
+    }
 
-    @media (max-width:720px){
-      .progress{ width:160px }
+    .controls{
+      background:#fff3d1;
+      border-top:3px solid var(--accent);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      padding:10px 14px;
+    }
+
+    .btn{
+      background:var(--orange);
+      color:white;
+      border:none;
+      padding:10px 18px;
+      font-size:1rem;
+      border-radius:8px;
+      font-family:'Luckiest Guy',cursive;
+      cursor:pointer;
+      box-shadow:4px 4px 0 var(--orange-dark);
+      transition:transform .1s;
+    }
+    .btn:hover{transform:translateY(-2px);}
+    .progress{
+      flex:1;
+      height:8px;
+      background:#ffdca2;
+      border-radius:10px;
+      overflow:hidden;
+      margin:0 12px;
+      position:relative;
+      min-width:100px;
+    }
+    .bar{
+      position:absolute;
+      top:0;left:0;bottom:0;
+      width:0%;
+      background:var(--orange);
+    }
+
+    /* Story popup */
+    .popup{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:90;
+      padding:20px;
+    }
+    .popup.active{display:flex;}
+    .popup .box{
+      background:#fff;
+      max-width:800px;
+      width:100%;
+      max-height:90vh;
+      overflow:auto;
+      padding:24px;
+      border-radius:12px;
+      box-shadow:8px 8px 0 var(--orange-dark);
+    }
+    .popup .box h1{
+      margin-top:0;
+      color:var(--orange-dark);
+    }
+    .popup .box img{
+      width:100%;
+      border-radius:8px;
+      margin-bottom:16px;
+    }
+
+    @media(max-width:640px){
+      .book img{aspect-ratio:auto;height:380px;}
+      .reader main{padding:16px;}
+      .chapter-title{font-size:1.2rem;}
     }
   </style>
 </head>
 <body>
-  <header>🌶️ Paprika – Home</header>
+  <header>🌶️ Paprika Verhalen & Boeken</header>
 
   <main>
-    <!-- Continue reading -->
     <div class="section">
-      <h2>Verder lezen</h2>
-      <div class="hint">Ga door waar je was gebleven.</div>
+      <h2>📚 Boeken</h2>
     </div>
-    <div class="grid" id="grid-continue"></div>
+    <div class="grid" id="grid-books"></div>
 
-    <!-- Favorites + search -->
-    <div class="section" style="margin-top:28px">
-      <h2>Favorieten</h2>
-      <input id="searchAll" class="search" type="search" placeholder="Zoek in boeken en verhalen…">
-    </div>
-    <div class="grid" id="grid-favs"></div>
-
-    <!-- Books -->
-    <div class="section" style="margin-top:28px">
-      <h2>Boeken</h2>
-      <div class="hint">Klik op een boek om in een popup te lezen.</div>
-    </div>
-    <div class="grid books" id="grid-books"></div>
-
-    <!-- Stories -->
-    <div class="section" style="margin-top:28px">
-      <h2>Verhalen</h2>
-      <div class="hint">Korte paprika-verhalen. Klik om te lezen.</div>
+    <div class="section" style="margin-top:40px;">
+      <h2>📰 Verhalen</h2>
     </div>
     <div class="grid" id="grid-stories"></div>
   </main>
 
-  <!-- BOOK READER (popup) -->
+  <!-- BOOK POPUP -->
   <div class="overlay" id="overlay">
-    <div class="reader" role="dialog" aria-modal="true">
+    <div class="reader">
       <header>
         <div id="r_info">Titel • Auteur</div>
-        <div style="display:flex; gap:8px; align-items:center">
-          <button class="chip" id="favBtn" style="cursor:pointer">⭐ Favoriet</button>
-          <button class="chip" id="close" style="cursor:pointer">✖ Sluiten</button>
-        </div>
+        <button class="btn" id="close">✖ Sluiten</button>
       </header>
       <main>
+        <img id="r_cover" style="width:100%;border-radius:10px;display:none;margin-bottom:20px;">
         <h3 class="chapter-title" id="c_title"></h3>
         <div class="chapter-text" id="c_text"></div>
       </main>
       <div class="controls">
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
-          <button class="chip" id="prev" style="cursor:pointer">← Vorige</button>
-          <button class="chip" id="next" style="cursor:pointer">Volgende →</button>
-          <select id="jump" class="select"></select>
-          <div class="progress" title="Voortgang"><div class="bar-in" id="bar"></div></div>
-        </div>
-        <div style="display:flex; gap:8px; align-items:center">
-          <button class="chip" id="ttsPlay" style="cursor:pointer">▶︎ Voorlezen</button>
-          <button class="chip" id="ttsPause" style="cursor:pointer">⏸</button>
-          <button class="chip" id="ttsStop" style="cursor:pointer">⏹</button>
-          <span class="chip">Snelheid <input id="rate" type="range" min="0.6" max="1.4" value="1" step="0.1"></span>
-        </div>
+        <button class="btn" id="prev">←</button>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+        <button class="btn" id="next">→</button>
       </div>
     </div>
   </div>
@@ -152,17 +290,16 @@
       <h1 id="s_title">Titel</h1>
       <img id="s_img" alt="">
       <div id="s_text" class="chapter-text"></div>
-      <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end">
-        <button class="chip" onclick="document.getElementById('storyPopup').classList.remove('active')" style="cursor:pointer">Sluiten</button>
+      <div style="text-align:right;margin-top:12px;">
+        <button class="btn" onclick="document.getElementById('storyPopup').classList.remove('active')">Sluiten</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase + App -->
+  <!-- Firebase + Script -->
   <script type="module">
-    /* Firebase */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDnBGfFwPCypELVQuz5pXF9K77UfL8oyKQ",
@@ -173,221 +310,120 @@
       appId: "1:1046216494559:web:c13e5edd1da11292dd886a"
     };
     const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const db = getFirestore(app);
 
-    /* State */
-    const LS_FAVS = "paprika_favs_v1";
-    const LS_PROGRESS = "paprika_progress_v1";
-    const favs = new Set(JSON.parse(localStorage.getItem(LS_FAVS) || "[]"));
-    const progress = JSON.parse(localStorage.getItem(LS_PROGRESS) || "{}");
+    const boekenContainer = document.getElementById("grid-books");
+    const verhalenContainer = document.getElementById("grid-stories");
+    const overlay = document.getElementById("overlay");
 
     let boeken = [];
     let verhalen = [];
+    let actueelBoek = null;
+    let hoofdstukIndex = 0;
 
-    /* Helpers */
-    const $ = (s)=>document.querySelector(s);
-    function saveFavs(){ localStorage.setItem(LS_FAVS, JSON.stringify([...favs])) }
-    function saveProgress(){ localStorage.setItem(LS_PROGRESS, JSON.stringify(progress)) }
-    function getProgress(boekId){ return Number.isInteger(progress[boekId])?progress[boekId]:0 }
-    function setProgress(boekId, idx){ progress[boekId]=idx; saveProgress() }
-    function isFav(id){ return favs.has(id) }
-    function truncate(s,n=110){ return s?.length>n? s.slice(0,n-1)+'…' : s }
-
-    /* Data load */
-    async function loadAll(){
-      const bs = await getDocs(query(collection(db,"boeken")));
-      boeken = []; bs.forEach(d=>boeken.push({ id:d.id, ...d.data() }));
-      const vs = await getDocs(query(collection(db,"verhalen")));
-      verhalen = []; vs.forEach(d=>verhalen.push({ id:d.id, ...d.data() }));
-      renderAll();
+    async function laadBoeken(){
+      const snap = await getDocs(collection(db, "boeken"));
+      boeken = [];
+      snap.forEach(d=>boeken.push({id:d.id, ...d.data()}));
+      renderBoeken();
     }
 
-    /* Render sections */
-    function renderContinue(){
-      const el = $("#grid-continue"); el.innerHTML="";
-      const cont = boeken.filter(b => (progress[b.id] ?? 0) > 0).slice(0,8);
-      if(cont.length===0){ el.innerHTML = `<div class="hint" style="grid-column:1/-1">Nog niets om te hervatten.</div>`; return }
-      cont.forEach(b=>{
-        const c=document.createElement("article"); c.className="book";
-        c.innerHTML=`
-          <img src="${b.omslag || 'https://picsum.photos/400/600?blur=2'}" alt="${b.titel}">
-          <div class="meta">
-            <h3>${b.titel}</h3>
-            <p>${truncate(b.samenvatting||'')}</p>
-            <div class="chip">Verder bij ${getProgress(b.id)+1}</div>
-          </div>`;
-        c.addEventListener("click",()=>openReader(b));  // popup openen
-        el.appendChild(c);
-      });
+    async function laadVerhalen(){
+      const snap = await getDocs(collection(db, "verhalen"));
+      verhalen = [];
+      snap.forEach(d=>verhalen.push({id:d.id, ...d.data()}));
+      renderVerhalen();
     }
 
-    function renderFavs(){
-      const el = $("#grid-favs"); el.innerHTML="";
-      const favBooks = boeken.filter(b=>isFav(b.id)).slice(0,6);
-      const favStories= verhalen.filter(v=>isFav("story:"+v.id)).slice(0,6);
-
-      if(favBooks.length===0 && favStories.length===0){
-        el.innerHTML = `<div class="hint" style="grid-column:1/-1">Nog geen favorieten. Klik ⭐ in een boek of verhaal.</div>`;
-        return;
-      }
-      favBooks.forEach(b=>{
-        const c=document.createElement("article"); c.className="book";
-        c.innerHTML=`
-          <img src="${b.omslag || 'https://picsum.photos/400/600?blur=2'}" alt="${b.titel}">
-          <div class="meta"><h3>${b.titel}</h3><p>${truncate(b.samenvatting||'')}</p><span class="chip">📚 Boek</span></div>`;
-        c.addEventListener("click",()=>openReader(b));
-        el.appendChild(c);
-      });
-      favStories.forEach(v=>{
-        const c=document.createElement("article"); c.className="card";
-        c.innerHTML=`
-          <img src="${v.afbeelding || 'https://picsum.photos/800/400?blur=2'}" alt="${v.titel}">
-          <div class="meta"><h3>${v.titel}</h3><p>${truncate(v.samenvatting || v.verhaal)}</p><span class="chip">📰 Verhaal</span></div>`;
-        c.addEventListener("click",()=>openStory(v));
-        el.appendChild(c);
-      });
-    }
-
-    function renderBooks(){
-      const el = $("#grid-books"); el.innerHTML="";
+    function renderBoeken(){
+      boekenContainer.innerHTML = "";
       boeken.forEach(b=>{
-        const c=document.createElement("article"); c.className="book";
-        c.innerHTML=`
-          <img src="${b.omslag || 'https://picsum.photos/400/600?blur=2'}" alt="${b.titel}">
+        const el = document.createElement("div");
+        el.className = "book";
+        el.innerHTML = `
+          <img src="${b.omslag || 'https://picsum.photos/800/1200?blur=2'}" alt="${b.titel}">
           <div class="meta">
             <h3>${b.titel}</h3>
-            <p>${truncate(b.samenvatting||'')}</p>
-            <div style="margin-top:6px">
-              ${isFav(b.id)?'<span class="chip">⭐ Favoriet</span>':''}
-              ${getProgress(b.id)?`<span class="chip">Verder bij ${getProgress(b.id)+1}</span>`:''}
-            </div>
-          </div>`;
-        c.addEventListener("click",()=>openReader(b));  // popup openen
-        el.appendChild(c);
+            <p>${b.auteur || 'Onbekende auteur'}</p>
+          </div>
+        `;
+        el.addEventListener("click", ()=>openBoek(b));
+        boekenContainer.appendChild(el);
       });
     }
 
-    function renderStories(){
-      const el = $("#grid-stories"); el.innerHTML="";
+    function renderVerhalen(){
+      verhalenContainer.innerHTML = "";
       verhalen.forEach(v=>{
-        const c=document.createElement("article"); c.className="card";
-        c.innerHTML=`
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
           <img src="${v.afbeelding || 'https://picsum.photos/800/400?blur=2'}" alt="${v.titel}">
           <div class="meta">
             <h3>${v.titel}</h3>
-            <p>${truncate(v.samenvatting || v.verhaal)}</p>
-            ${isFav("story:"+v.id)?'<div class="chip">⭐ Favoriet</div>':''}
-          </div>`;
-        c.addEventListener("click",()=>openStory(v));
-        el.appendChild(c);
+            <p>${v.samenvatting || v.verhaal.slice(0,100)+'...'}</p>
+          </div>
+        `;
+        el.addEventListener("click", ()=>openVerhaal(v));
+        verhalenContainer.appendChild(el);
       });
     }
 
-    function renderAll(){
-      renderContinue();
-      renderFavs();
-      renderBooks();
-      renderStories();
-    }
-
-    /* --- Reader (books) --- */
-    const overlay = $("#overlay");
-    const cTitle = $("#c_title");
-    const cText  = $("#c_text");
-    const jump   = $("#jump");
-    const bar    = $("#bar");
-    const favBtn = $("#favBtn");
-    const rInfo  = $("#r_info");
-
-    let actueelBoek=null, hoofdstukIndex=0;
-
-    function openReader(boek){
+    function openBoek(boek){
       actueelBoek = boek;
-      hoofdstukIndex = getProgress(boek.id) || 0;
-      rInfo.textContent = `${boek.titel} • ${boek.auteur||'Onbekend'}`;
+      hoofdstukIndex = 0;
+      document.getElementById("r_info").textContent = `${boek.titel} • ${boek.auteur || ''}`;
+      document.getElementById("r_cover").src = boek.omslag;
+      toonHoofdstuk();
+      overlay.classList.add("active");
+    }
 
-      jump.innerHTML="";
-      (boek.hoofdstukken||[]).forEach((h,i)=>{
-        const o=document.createElement("option"); o.value=i; o.textContent=`${i+1}. ${h.titel||'Hoofdstuk'}`; jump.appendChild(o);
-      });
-      jump.value=String(hoofdstukIndex);
-      favBtn.classList.toggle("primary", isFav(boek.id));
-      showChapter();
-      overlay.classList.add("active"); // popup openen
+    function toonHoofdstuk(){
+      const cover = document.getElementById("r_cover");
+      const cTitle = document.getElementById("c_title");
+      const cText = document.getElementById("c_text");
+      const bar = document.getElementById("bar");
+
+      if(hoofdstukIndex === 0){
+        cover.style.display = "block";
+        cTitle.textContent = "Boekcover";
+        cText.textContent = "Tik of klik → om het eerste hoofdstuk te openen.";
+      } else {
+        cover.style.display = "none";
+        const h = actueelBoek.hoofdstukken[hoofdstukIndex-1];
+        cTitle.textContent = h.titel || `Hoofdstuk ${hoofdstukIndex}`;
+        cText.textContent = h.tekst || "";
+      }
+
+      const total = (actueelBoek.hoofdstukken?.length || 0) + 1;
+      bar.style.width = `${(hoofdstukIndex / total) * 100}%`;
     }
-    function closeReader(){ stopTTS(); overlay.classList.remove("active") }
-    function showChapter(){
-      const h=(actueelBoek.hoofdstukken||[])[hoofdstukIndex] || { titel:"(leeg)", tekst:"" };
-      cTitle.textContent=h.titel || `Hoofdstuk ${hoofdstukIndex+1}`;
-      cText.textContent =h.tekst || "";
-      jump.value=String(hoofdstukIndex);
-      bar.style.width = `${((hoofdstukIndex+1)/(actueelBoek.hoofdstukken?.length||1))*100}%`;
-      setProgress(actueelBoek.id, hoofdstukIndex);
-      renderContinue(); renderBooks();
-    }
-    document.getElementById("close").addEventListener("click", closeReader);
-    document.getElementById("prev").addEventListener("click", ()=>{ if(!actueelBoek) return; hoofdstukIndex=Math.max(0,hoofdstukIndex-1); showChapter() });
-    document.getElementById("next").addEventListener("click", ()=>{ if(!actueelBoek) return; hoofdstukIndex=Math.min((actueelBoek.hoofdstukken?.length||1)-1,hoofdstukIndex+1); showChapter() });
-    jump.addEventListener("change", ()=>{ hoofdstukIndex=Number(jump.value||0); showChapter() });
-    favBtn.addEventListener("click", ()=>{
-      if(!actueelBoek) return;
-      if(isFav(actueelBoek.id)) favs.delete(actueelBoek.id); else favs.add(actueelBoek.id);
-      saveFavs(); renderFavs(); renderBooks();
+
+    document.getElementById("next").addEventListener("click", ()=>{
+      const total = (actueelBoek.hoofdstukken?.length || 0) + 1;
+      hoofdstukIndex = Math.min(total-1, hoofdstukIndex+1);
+      toonHoofdstuk();
     });
-    overlay.addEventListener("click",(e)=>{ if(e.target===overlay) closeReader() });
+    document.getElementById("prev").addEventListener("click", ()=>{
+      hoofdstukIndex = Math.max(0, hoofdstukIndex-1);
+      toonHoofdstuk();
+    });
+    document.getElementById("close").addEventListener("click", ()=>overlay.classList.remove("active"));
+    overlay.addEventListener("click", e=>{
+      if(e.target===overlay) overlay.classList.remove("active");
+    });
 
-    /* TTS */
-    let utter=null;
-    function ensureUtter(){ if(!utter){ utter=new SpeechSynthesisUtterance(); utter.lang="nl-NL"; utter.rate=Number(document.getElementById("rate").value||1) } }
-    function playTTS(){ ensureUtter(); stopTTS(false); utter.text=cText.textContent||""; utter.rate=Number(document.getElementById("rate").value||1); speechSynthesis.speak(utter) }
-    function pauseTTS(){ speechSynthesis.pause() }
-    function stopTTS(cancel=true){ if(cancel) speechSynthesis.cancel() }
-    document.getElementById("ttsPlay").addEventListener("click", playTTS);
-    document.getElementById("ttsPause").addEventListener("click", pauseTTS);
-    document.getElementById("ttsStop").addEventListener("click", ()=>stopTTS(true));
-    document.getElementById("rate").addEventListener("input", ()=>{ if(speechSynthesis.speaking && !speechSynthesis.paused) playTTS() });
-
-    /* --- Story popup --- */
-    function openStory(v){
+    function openVerhaal(v){
       document.getElementById("s_title").textContent = v.titel;
       document.getElementById("s_img").src = v.afbeelding || 'https://picsum.photos/800/400?blur=2';
-      document.getElementById("s_text").textContent = v.verhaal || v.samenvatting || "";
+      document.getElementById("s_text").textContent = v.verhaal || v.samenvatting;
       document.getElementById("storyPopup").classList.add("active");
     }
-    document.getElementById("storyPopup").addEventListener("click", e=>{
-      if(e.target.id==="storyPopup") e.currentTarget.classList.remove("active")
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      laadBoeken();
+      laadVerhalen();
     });
-
-    /* Search */
-    document.getElementById("searchAll").addEventListener("input", e=>{
-      const q = e.target.value.trim().toLowerCase();
-      // filter on the fly
-      const books = q ? boeken.filter(b=> (b.titel||"").toLowerCase().includes(q) || (b.auteur||"").toLowerCase().includes(q)) : boeken;
-      const stories = q ? verhalen.filter(v=> (v.titel||"").toLowerCase().includes(q) || (v.samenvatting||"").toLowerCase().includes(q) || (v.verhaal||"").toLowerCase().includes(q)) : verhalen;
-
-      // render to favs area as search results
-      const el = document.getElementById("grid-favs"); el.innerHTML="";
-      if(q && books.length===0 && stories.length===0){
-        el.innerHTML = `<div class="hint" style="grid-column:1/-1">Geen resultaten voor “${q}”.</div>`;
-        return;
-      }
-      if(!q){ renderFavs(); return }
-      books.slice(0,6).forEach(b=>{
-        const c=document.createElement("article"); c.className="book";
-        c.innerHTML=`<img src="${b.omslag||'https://picsum.photos/400/600?blur=2'}"><div class="meta"><h3>${b.titel}</h3><p>${truncate(b.samenvatting||'')}</p></div>`;
-        c.addEventListener("click",()=>openReader(b));
-        el.appendChild(c);
-      });
-      stories.slice(0,6).forEach(v=>{
-        const c=document.createElement("article"); c.className="card";
-        c.innerHTML=`<img src="${v.afbeelding||'https://picsum.photos/800/400?blur=2'}"><div class="meta"><h3>${v.titel}</h3><p>${truncate(v.samenvatting||v.verhaal)}</p></div>`;
-        c.addEventListener("click",()=>openStory(v));
-        el.appendChild(c);
-      });
-    });
-
-    /* Init */
-    document.addEventListener("DOMContentLoaded", loadAll);
   </script>
 </body>
 </html>
